@@ -1,0 +1,15 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "ourivesaria",
+  "compatibility_date": "2026-10-15",
+  // Os arquivos do site ficam em ./public (index.html na raiz dessa pasta).
+  "assets": {
+    "directory": "./public",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  },
+  // Endereço final. Exige que arcanestudios.io esteja na Cloudflare (veja o DEPLOY.md).
+  "routes": [
+    { "pattern": "ourivesaria.arcanestudios.io", "custom_domain": true }
+  ]
+}
