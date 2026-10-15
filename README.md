@@ -59,6 +59,8 @@ O 3D é ilustrativo; medidas, composição, preços, disponibilidade e prazos de
 
 ## Recursos
 
+Entradas escalonadas durante a rolagem, deslocamento suave das fotos e indicador de progresso. O anel 3D gira automaticamente quando visível, flutua e retoma o giro após ser arrastado. O visitante pode pausar; a preferência de movimento reduzido desativa os movimentos automáticos.
+
 Galeria filtrável, detalhes de produtos e fotos alternativas, formulário com rascunho local, página de agradecimento com cópia de mensagem, CTA fixo móvel, FAQ com cinco perguntas, privacidade, 404, breadcrumbs, SEO, Open Graph, sitemap, robots, FAQPage e JewelryStore sem informações comerciais inventadas. Redução de animações respeitada. Fontes, imagens e Three.js servidos localmente.
 
 O formulário não simula envio: a mensagem só chega ao ateliê quando o visitante a envia no canal oficial. O rascunho pode ser apagado nas páginas de agradecimento e privacidade.
