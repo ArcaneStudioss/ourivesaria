@@ -1,0 +1,78 @@
+name: Deploy (Hostinger, sem queda)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      rollback_to:
+        description: "Opcional: nome de uma release (ex: 20261015120000-abc1234) para voltar a ela"
+        required: false
+
+# Um deploy por vez; um novo espera o anterior terminar em vez de cancelá-lo no meio.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SSH_HOST: ${{ secrets.HOSTINGER_SSH_HOST }}
+      SSH_PORT: ${{ secrets.HOSTINGER_SSH_PORT }}
+      SSH_USER: ${{ secrets.HOSTINGER_SSH_USER }}
+      REMOTE_BASE: ${{ secrets.HOSTINGER_REMOTE_BASE }}
+      SSH_KEY: ${{ secrets.HOSTINGER_SSH_KEY }}
+      SSH_KNOWN_HOSTS: ${{ secrets.HOSTINGER_KNOWN_HOSTS }}
+      SITE_URL: https://ourivesaria.arcanestudios.io
+      KEEP_RELEASES: "5"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Conferir segredos
+        id: cfg
+        run: |
+          if [ -z "$SSH_HOST" ] || [ -z "$SSH_USER" ] || [ -z "$REMOTE_BASE" ] || [ -z "$SSH_KEY" ]; then
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Segredos da Hostinger ainda não configurados. Deploy pulado (veja o DEPLOY.md)."
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build (só se o projeto tiver)
+        id: build
+        if: steps.cfg.outputs.ready == 'true' && github.event.inputs.rollback_to == ''
+        run: |
+          SRC="."
+          if [ -f package.json ] && node -e 'process.exit(require("./package.json").scripts?.build ? 0 : 1)'; then
+            npm ci
+            npm run build
+            for d in dist build out public; do
+              if [ -f "$d/index.html" ]; then SRC="$d"; break; fi
+            done
+          fi
+          echo "src=$SRC" >> "$GITHUB_OUTPUT"
+
+      - name: Preparar SSH
+        if: steps.cfg.outputs.ready == 'true'
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          if [ -n "$SSH_KNOWN_HOSTS" ]; then
+            printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          else
+            echo "::warning::HOSTINGER_KNOWN_HOSTS não definido; usando ssh-keyscan (menos seguro)."
+            ssh-keyscan -p "${SSH_PORT:-22}" -H "$SSH_HOST" > ~/.ssh/known_hosts
+          fi
+
+      - name: Publicar
+        if: steps.cfg.outputs.ready == 'true'
+        env:
+          SRC_DIR: ${{ steps.build.outputs.src }}
+          ROLLBACK_TO: ${{ github.event.inputs.rollback_to }}
+        run: bash .github/deploy/deploy.sh
