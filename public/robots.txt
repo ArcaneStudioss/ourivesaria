@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Disallow: /obrigado/
+Sitemap: https://ourivesaria.arcanestudios.io/sitemap.xml

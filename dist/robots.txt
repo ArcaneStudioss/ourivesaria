@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Disallow: /obrigado/
+Sitemap: https://ourivesaria-medeiros-atelie.saltyluck65.chatgpt.site/sitemap.xml
