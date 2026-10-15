@@ -1,0 +1,12 @@
+{
+  "name": "ourivesaria-medeiros",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Landing page da Ourivesaria Medeiros",
+  "scripts": {
+    "build": "node scripts/build-public.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -2,3 +2,4 @@ qa/*.png
 __pycache__/
 *.tar.gz
 .openai/*.tmp
+node_modules/

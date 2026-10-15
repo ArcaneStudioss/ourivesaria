@@ -14,6 +14,21 @@ python -m http.server 8080 --directory dist
 
 Abra `http://localhost:8080`. Para simular a página 404 com seu status HTTP, execute `python qa-server.py` na pasta do projeto. A pasta publicável é `dist/` e funciona em hospedagens estáticas com URLs a partir da raiz do domínio.
 
+## Publicar na Cloudflare
+
+O repositório já tem um workflow e `wrangler.jsonc` configurados para publicar `public/` em `https://ourivesaria.arcanestudios.io`. A pasta `dist/` continua sendo a fonte da página.
+
+Após editar `dist/`, rode:
+
+```sh
+npm ci
+npm run build
+```
+
+O build não instala dependências de aplicação: copia `dist/` para `public/` e ajusta canonical, Open Graph, sitemap, robots e a origem de configuração para o domínio de produção. `SITE_URL` pode substituir esse domínio. A cópia `public/` é versionada para passar pela verificação inicial do workflow existente; ele também executa o build antes do deploy.
+
+A configuração de deploy e rollback existente foi preservada. Os secrets da Cloudflare devem estar configurados no GitHub, conforme `DEPLOY.md`.
+
 ## Configurar os canais oficiais
 
 Edite `dist/config.json`:
