@@ -1,0 +1,4 @@
+qa/*.png
+__pycache__/
+*.tar.gz
+.openai/*.tmp
